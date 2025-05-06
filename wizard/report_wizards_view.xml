@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Import Report Wizard Form View -->
+    <record id="view_foconnect_import_report_wizard" model="ir.ui.view">
+        <field name="name">foconnect.import.report.wizard.form</field>
+        <field name="model">foconnect.import.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Rapport d'importation">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="supplier_ids" widget="many2many_tags"/>
+                        <field name="include_customs_info"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate_report" string="Générer rapport" type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Sales Report Wizard Form View -->
+    <record id="view_foconnect_sales_report_wizard" model="ir.ui.view">
+        <field name="name">foconnect.sales.report.wizard.form</field>
+        <field name="model">foconnect.sales.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Rapport de ventes">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="customer_ids" widget="many2many_tags"/>
+                        <field name="customer_category"/>
+                        <field name="include_delivery_info"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate_report" string="Générer rapport" type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Import Report Wizard Action -->
+    <record id="action_foconnect_import_report_wizard" model="ir.actions.act_window">
+        <field name="name">Rapport d'importation</field>
+        <field name="res_model">foconnect.import.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Sales Report Wizard Action -->
+    <record id="action_foconnect_sales_report_wizard" model="ir.actions.act_window">
+        <field name="name">Rapport de ventes</field>
+        <field name="res_model">foconnect.sales.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Supprimez les menuitem d'ici et déplacez-les dans menu_views.xml -->
+</odoo>

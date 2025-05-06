@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire fournisseur étranger -->
+    <record id="view_foreign_supplier_form" model="ir.ui.view">
+        <field name="name">res.partner.foreign.supplier.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Informations Fournisseur Étranger"
+                      invisible="not is_foreign_supplier">
+                    <group>
+                        <group>
+                            <field name="supplier_reference" string="N° de Fournisseur"/>
+                            <field name="contact_name" string="Contact"/>
+                            <field name="fix_number" string="FIX"/>
+                            <field name="mobile_number" string="Num portable"/>
+                        </group>
+                        <group>
+                            <field name="delivery_delay" string="Délais de livraison"/>
+                            <field name="parts_to_supply" string="Les pièces à fournir"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="is_foreign_supplier"/>
+                <field name="is_local_supplier"/>
+                <field name="is_customer"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue formulaire fournisseur local -->
+    <record id="view_local_supplier_form" model="ir.ui.view">
+        <field name="name">res.partner.local.supplier.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Informations Fournisseur Local"
+                      invisible="not is_local_supplier">
+                    <group>
+                        <group>
+                            <field name="supplier_reference" string="N° de Fournisseur"/>
+                            <field name="contact_name" string="Contact"/>
+                            <field name="fix_number" string="FIX"/>
+                            <field name="mobile_number" string="Num portable"/>
+                        </group>
+                        <group>
+                            <field name="service" string="Service"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue formulaire client -->
+    <record id="view_customer_form" model="ir.ui.view">
+        <field name="name">res.partner.customer.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Informations Client"
+                      invisible="not is_customer">
+                    <group>
+                        <group>
+                            <field name="supplier_reference" string="N° de client"/>
+                            <field name="contact_name" string="Contact"/>
+                            <field name="fix_number" string="FIX"/>
+                            <field name="mobile_number" string="Num portable"/>
+                        </group>
+                        <group>
+                            <field name="poste" string="Poste"/>
+                            <field name="observation" string="Observation"/>
+                            <field name="credit_limit"/>
+                            <field name="outstanding_balance"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue liste fournisseurs étrangers -->
+    <record id="view_foreign_supplier_tree" model="ir.ui.view">
+        <field name="name">res.partner.foreign.supplier.tree</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="Fournisseurs Étrangers">
+                <field name="supplier_reference" string="N° de Fournisseur"/>
+                <field name="name" string="Nom de Fournisseur"/>
+                <field name="contact_name" string="Contact"/>
+                <field name="fix_number" string="FIX"/>
+                <field name="mobile_number" string="Num portable"/>
+                <field name="email" string="Adresse e-mail"/>
+                <field name="delivery_delay" string="Délais de livraison"/>
+                <field name="parts_to_supply" string="Les pièces à fournir"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue liste fournisseurs locaux -->
+    <record id="view_local_supplier_tree" model="ir.ui.view">
+        <field name="name">res.partner.local.supplier.tree</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="Fournisseurs Locaux">
+                <field name="supplier_reference" string="N° de Fournisseur"/>
+                <field name="name" string="Nom de Fournisseur"/>
+                <field name="contact_name" string="Contact"/>
+                <field name="fix_number" string="FIX"/>
+                <field name="mobile_number" string="Num portable"/>
+                <field name="email" string="Adresse e-mail"/>
+                <field name="service" string="Service"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue liste clients -->
+    <record id="view_customer_tree" model="ir.ui.view">
+        <field name="name">res.partner.customer.tree</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="Clients">
+                <field name="supplier_reference" string="N° de client"/>
+                <field name="name" string="Nom de client"/>
+                <field name="contact_name" string="Contact"/>
+                <field name="fix_number" string="FIX"/>
+                <field name="mobile_number" string="Num portable"/>
+                <field name="poste" string="Poste"/>
+                <field name="email" string="Adresse E-mail"/>
+                <field name="observation" string="Observation"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue filtre fournisseurs -->
+    <record id="view_foreign_supplier_filter" model="ir.ui.view">
+        <field name="name">res.partner.foreign.supplier.filter</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='supplier']" position="after">
+                <filter string="Fournisseurs Étrangers" name="foreign_supplier" domain="[('is_foreign_supplier', '=', True)]"/>
+                <filter string="Fournisseurs Locaux" name="local_supplier" domain="[('is_local_supplier', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action fournisseurs étrangers -->
+    <record id="action_foreign_supplier" model="ir.actions.act_window">
+        <field name="name">Fournisseurs Étrangers</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="domain">[('is_foreign_supplier', '=', True)]</field>
+        <field name="context">{'default_is_foreign_supplier': True}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                       (0, 0, {'view_mode': 'tree', 'view_id': ref('view_foreign_supplier_tree')}),
+                                       (0, 0, {'view_mode': 'form', 'view_id': ref('view_foreign_supplier_form')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre premier fournisseur étranger
+            </p>
+        </field>
+    </record>
+
+    <!-- Action fournisseurs locaux -->
+    <record id="action_local_supplier" model="ir.actions.act_window">
+        <field name="name">Fournisseurs Locaux</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="domain">[('is_local_supplier', '=', True)]</field>
+        <field name="context">{'default_is_local_supplier': True}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                       (0, 0, {'view_mode': 'tree', 'view_id': ref('view_local_supplier_tree')}),
+                                       (0, 0, {'view_mode': 'form', 'view_id': ref('view_local_supplier_form')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre premier fournisseur local
+            </p>
+        </field>
+    </record>
+
+    <!-- Action clients -->
+    <record id="action_customers" model="ir.actions.act_window">
+        <field name="name">Clients</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="domain">[('is_customer', '=', True)]</field>
+        <field name="context">{'default_is_customer': True}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                       (0, 0, {'view_mode': 'tree', 'view_id': ref('view_customer_tree')}),
+                                       (0, 0, {'view_mode': 'form', 'view_id': ref('view_customer_form')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre premier client
+            </p>
+        </field>
+    </record>
+</odoo>

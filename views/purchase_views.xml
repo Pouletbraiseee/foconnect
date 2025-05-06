@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire bon de commande -->
+    <record id="view_purchase_order_form_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="before">
+                <field name="po_number" string="N° BC"/>
+                <field name="date_created" string="Date"/>
+                <field name="edited_by" string="Édité par"/>
+                <field name="order_type" widget="radio" options="{'horizontal': true}"/>
+            </xpath>
+
+            <!-- Informations communes -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="reception_status" invisible="state in ('draft', 'sent')"/>
+            </xpath>
+
+            <!-- Champs spécifiques import -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Informations d'importation" invisible="order_type != 'import'">
+                    <group>
+                        <group string="Montants">
+                            <field name="montant" string="Montant"/>
+                            <field name="freight_reel" string="Freight Réel"/>
+                            <field name="freight_ext" string="Freight Ext"/>
+                            <field name="ratio" string="Ratio"/>
+                            <field name="amount_total_custom" string="Amount Total"/>
+                            <field name="exchange_rate" string="Taux de Change"/>
+                        </group>
+                        <group string="Dates">
+                            <field name="payment_date" string="Date de Paiement"/>
+                            <field name="payment_reception_date" string="Date de Réception Paiement"/>
+                            <field name="bank" string="Bank"/>
+                            <field name="predate" string="Date Prête"/>
+                            <field name="transport_date" string="Date Transp"/>
+                            <field name="expedition_date" string="Date d'Expédition"/>
+                        </group>
+                        <group string="Livraison">
+                            <field name="arrival_date" string="Date Arrivée"/>
+                            <field name="home_date" string="Date à Casa"/>
+                            <field name="storage_date" string="Date Stockage"/>
+                            <field name="transport_mode" string="Mode de Transport"/>
+                        </group>
+                        <group string="Transport">
+                            <field name="transport_company" string="Transporteur"/>
+                            <field name="volume_eur" string="Volume EUR"/>
+                            <field name="weight_kg" string="Fret KG"/>
+                            <field name="local_warehouse" string="Magasinage Local"/>
+                            <field name="local_transport" string="Trsp Local"/>
+                            <field name="transit" string="Transit"/>
+                            <field name="prepost" string="Pré/Post"/>
+                            <field name="ratio_final" string="Ratio Final"/>
+                        </group>
+                    </group>
+                </page>
+
+                <!-- Champs spécifiques achat local -->
+                <page string="Informations d'achat local" invisible="order_type != 'local'">
+                    <group>
+                        <group string="Montants">
+                            <field name="ht_amount" string="H.T"/>
+                            <field name="tva_amount" string="T.V.A"/>
+                            <field name="ttc_amount" string="T.T.C"/>
+                        </group>
+                        <group string="Paiement">
+                            <field name="is_paid" string="REGLE OU/NON"/>
+                            <field name="check_number" string="NUMERO DE CHEQ"/>
+                            <field name="check_date" string="DATE DU CHEQ"/>
+                        </group>
+                        <group string="Réception">
+                            <field name="reception_and_invoice_status" string="RECEPTION BL &amp; FACT OUI/NON"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue en lecture seule pour la consultation -->
+    <record id="view_purchase_order_form_readonly" model="ir.ui.view">
+        <field name="name">purchase.order.form.readonly</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="view_purchase_order_form_inherit"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="edit">false</attribute>
+                <attribute name="create">false</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue liste bon de commande import -->
+    <record id="view_purchase_order_import_tree" model="ir.ui.view">
+        <field name="name">purchase.order.import.tree</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <tree string="Bons de Commande Import">
+                <field name="po_number" string="N° BC"/>
+                <field name="date_created" string="DATE"/>
+                <field name="partner_id" string="FOURNISSEUR"/>
+                <field name="montant" string="MONTANT"/>
+                <field name="freight_reel" string="FREIGHT REEL"/>
+                <field name="freight_ext" string="FREIGHT EXTE"/>
+                <field name="ratio" string="RATIO"/>
+                <field name="amount_total_custom" string="AMOUNT TOTAL"/>
+                <field name="exchange_rate" string="TAUX DE CHANGE"/>
+                <field name="payment_date" string="DATE DE PAIEMENT"/>
+                <field name="bank" string="BANK"/>
+                <field name="transport_mode" string="MODE"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue liste bon de commande local -->
+    <record id="view_purchase_order_local_tree" model="ir.ui.view">
+        <field name="name">purchase.order.local.tree</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <tree string="Bons de Commande Locaux">
+                <field name="po_number" string="N° BC"/>
+                <field name="date_created" string="DATE"/>
+                <field name="edited_by" string="EDITER PAR"/>
+                <field name="partner_id" string="FOURNISSEUR"/>
+                <field name="ht_amount" string="H.T"/>
+                <field name="tva_amount" string="T.V.A"/>
+                <field name="ttc_amount" string="T.T.C"/>
+                <field name="is_paid" string="REGLE OU/NON"/>
+                <field name="check_number" string="NUMERO DE CHEQ"/>
+                <field name="check_date" string="DATE DU CHEQ"/>
+                <field name="reception_and_invoice_status" string="RECEPTION BL &amp; FACT OUI/NON"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue filtre bon de commande -->
+    <record id="view_purchase_order_filter_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.filter.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='to_approve']" position="after">
+                <filter string="Achats Locaux" name="local_purchase" domain="[('order_type', '=', 'local')]"/>
+                <filter string="Achats Import" name="import_purchase" domain="[('order_type', '=', 'import')]"/>
+                <separator/>
+                <filter string="Réglés" name="paid" domain="[('is_paid', '=', 'oui')]"/>
+                <filter string="Non Réglés" name="unpaid" domain="[('is_paid', '=', 'non')]"/>
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter string="Type de commande" name="group_by_order_type" context="{'group_by': 'order_type'}"/>
+                <filter string="Fournisseur" name="group_by_supplier" context="{'group_by': 'partner_id'}"/>
+                <filter string="Date" name="group_by_date" context="{'group_by': 'date_created'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action consultation commandes locales -->
+    <record id="action_foconnect_purchase_local_orders_consultation" model="ir.actions.act_window">
+        <field name="name">Consultation des bons de commande locaux</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="domain">[('order_type', '=', 'local')]</field>
+        <field name="context">{'default_order_type': 'local', 'search_default_local_purchase': 1, 'form_view_ref': 'foconnect.view_purchase_order_form_readonly'}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                   (0, 0, {'view_mode': 'tree', 'view_id': ref('view_purchase_order_local_tree')}),
+                                   (0, 0, {'view_mode': 'form', 'view_id': ref('view_purchase_order_form_readonly')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Consultez vos bons de commande locaux
+            </p>
+        </field>
+    </record>
+
+    <!-- Action bons de commande locaux -->
+    <record id="action_foconnect_purchase_local_orders" model="ir.actions.act_window">
+        <field name="name">Bons de commande locaux</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="domain">[('order_type', '=', 'local')]</field>
+        <field name="context">{'default_order_type': 'local', 'search_default_local_purchase': 1, 'create': True}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                       (0, 0, {'view_mode': 'tree', 'view_id': ref('view_purchase_order_local_tree')}),
+                                       (0, 0, {'view_mode': 'form', 'view_id': ref('view_purchase_order_form_inherit')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre premier bon de commande local
+            </p>
+        </field>
+    </record>
+
+    <!-- Action réception commandes locales -->
+    <record id="action_foconnect_purchase_local_reception" model="ir.actions.act_window">
+        <field name="name">Bons de réception locaux</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="domain">[('order_type', '=', 'local'), ('state', 'in', ['purchase', 'done'])]</field>
+        <field name="context">{'default_order_type': 'local', 'search_default_local_purchase': 1}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                       (0, 0, {'view_mode': 'tree', 'view_id': ref('view_purchase_order_local_tree')}),
+                                       (0, 0, {'view_mode': 'form', 'view_id': ref('view_purchase_order_form_inherit')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Gérez vos bons de réception locaux
+            </p>
+        </field>
+    </record>
+
+    <!-- Action consultation commandes import -->
+    <record id="action_foconnect_purchase_import_orders_consultation" model="ir.actions.act_window">
+        <field name="name">Consultation des bons de commande import</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="domain">[('order_type', '=', 'import')]</field>
+        <field name="context">{'default_order_type': 'import', 'search_default_import_purchase': 1, 'form_view_ref': 'foconnect.view_purchase_order_form_readonly'}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                   (0, 0, {'view_mode': 'tree', 'view_id': ref('view_purchase_order_import_tree')}),
+                                   (0, 0, {'view_mode': 'form', 'view_id': ref('view_purchase_order_form_readonly')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Consultez vos bons de commande import
+            </p>
+        </field>
+    </record>
+
+    <!-- Action bons de commande import -->
+    <record id="action_foconnect_purchase_import_orders" model="ir.actions.act_window">
+        <field name="name">Bons de commande import</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="domain">[('order_type', '=', 'import')]</field>
+        <field name="context">{'default_order_type': 'import', 'search_default_import_purchase': 1, 'create': True}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                       (0, 0, {'view_mode': 'tree', 'view_id': ref('view_purchase_order_import_tree')}),
+                                       (0, 0, {'view_mode': 'form', 'view_id': ref('view_purchase_order_form_inherit')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre premier bon de commande import
+            </p>
+        </field>
+    </record>
+
+    <!-- Action réception commandes import -->
+    <record id="action_foconnect_purchase_import_reception" model="ir.actions.act_window">
+        <field name="name">Bons de réception import</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="domain">[('order_type', '=', 'import'), ('state', 'in', ['purchase', 'done'])]</field>
+        <field name="context">{'default_order_type': 'import', 'search_default_import_purchase': 1}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                       (0, 0, {'view_mode': 'tree', 'view_id': ref('view_purchase_order_import_tree')}),
+                                       (0, 0, {'view_mode': 'form', 'view_id': ref('view_purchase_order_form_inherit')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Gérez vos bons de réception import
+            </p>
+        </field>
+    </record>
+</odoo>

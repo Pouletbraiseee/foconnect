@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_res_users_foconnect_manager,res.users.foconnect.manager,base.model_res_users,foconnect.group_foconnect_manager,1,1,1,1
+access_res_partner_foconnect_user,res.partner.foconnect.user,base.model_res_partner,foconnect.group_foconnect_user,1,1,1,0
+access_res_partner_foconnect_manager,res.partner.foconnect.manager,base.model_res_partner,foconnect.group_foconnect_manager,1,1,1,1
+access_purchase_order_foconnect_user,purchase.order.foconnect.user,purchase.model_purchase_order,foconnect.group_foconnect_user,1,1,1,0
+access_purchase_order_foconnect_manager,purchase.order.foconnect.manager,purchase.model_purchase_order,foconnect.group_foconnect_manager,1,1,1,1
+access_sale_order_foconnect_user,sale.order.foconnect.user,sale.model_sale_order,foconnect.group_foconnect_user,1,1,1,0
+access_sale_order_foconnect_manager,sale.order.foconnect.manager,sale.model_sale_order,foconnect.group_foconnect_manager,1,1,1,1
+access_account_move_foconnect_user,account.move.foconnect.user,account.model_account_move,foconnect.group_foconnect_user,1,1,1,0
+access_account_move_foconnect_manager,account.move.foconnect.manager,account.model_account_move,foconnect.group_foconnect_manager,1,1,1,1

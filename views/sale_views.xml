@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire commande client -->
+    <record id="view_sale_order_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="customer_reference"/>
+                <field name="requested_delivery_date"/>
+                <field name="actual_delivery_date" readonly="1"/>
+                <field name="invoice_type" invisible="state not in ('sale', 'done')"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="credit_limit_exceeded" invisible="1"/>
+                <div class="alert alert-danger" role="alert" invisible="not credit_limit_exceeded">
+                    <span>Attention: La limite de crédit du client est dépassée!</span>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree//field[@name='price_unit']" position="after">
+                <field name="available_qty"/>
+                <field name="estimated_delivery_date"/>
+            </xpath>
+            <!-- Boutons pour les différents types de factures -->
+            <xpath expr="//button[@name='action_view_invoice']" position="after">
+                <button name="action_create_proforma"
+                        string="Créer Facture Proforma"
+                        type="object"
+                        invisible="state not in ('sale', 'done')"
+                        class="oe_highlight"/>
+                <button name="action_create_commercial"
+                        string="Créer Facture Commerciale"
+                        type="object"
+                        invisible="state not in ('sale', 'done')"
+                        class="oe_highlight"/>
+                <button name="action_create_avoir"
+                        string="Créer Facture Avoir"
+                        type="object"
+                        invisible="state not in ('sale', 'done')"
+                        class="oe_highlight"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue filtre commande client -->
+    <record id="view_sale_order_filter_inherit" model="ir.ui.view">
+        <field name="name">sale.order.filter.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_sale_orders_filter']" position="after">
+                <!-- <filter string="Crédit dépassé" name="credit_limit_filter" domain="[('credit_limit_exceeded', '=', True)]"/> -->
+                <filter string="Avec retours" name="has_return_filter" domain="[('has_return', '=', True)]"/>
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter string="Date de livraison demandée" name="group_by_requested_date" context="{'group_by': 'requested_delivery_date'}"/>
+                <filter string="Date de livraison effective" name="group_by_actual_date" context="{'group_by': 'actual_delivery_date'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action devis -->
+    <record id="action_foconnect_sale_quotation" model="ir.actions.act_window">
+        <field name="name">Devis</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="domain">[('state', 'in', ['draft', 'sent'])]</field>
+        <field name="context">{'create': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre premier devis
+            </p>
+        </field>
+    </record>
+
+    <!-- Action bon de livraison -->
+    <record id="action_foconnect_sale_delivery" model="ir.actions.act_window">
+        <field name="name">Bons de Livraison</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="domain">[('picking_type_code', '=', 'outgoing'), ('sale_id', '!=', False)]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Consultez vos bons de livraison
+            </p>
+        </field>
+    </record>
+
+    <!-- Action bon de retour -->
+    <record id="action_foconnect_sale_return" model="ir.actions.act_window">
+        <field name="name">Bons de Retour</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="domain">[('picking_type_code', '=', 'incoming'), ('sale_id', '!=', False)]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Consultez vos bons de retour
+            </p>
+        </field>
+    </record>
+
+    <!-- Action facture proforma -->
+    <record id="action_foconnect_sale_proforma" model="ir.actions.act_window">
+        <field name="name">Factures Proforma</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="domain">[('move_type', '=', 'out_invoice'), ('invoice_type', '=', 'proforma')]</field>
+        <field name="context">{'default_move_type': 'out_invoice', 'default_invoice_type': 'proforma'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Consultez vos factures proforma
+            </p>
+        </field>
+    </record>
+
+    <!-- Action facture commerciale -->
+    <record id="action_foconnect_sale_invoice_commercial" model="ir.actions.act_window">
+        <field name="name">Factures Commerciales</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="domain">[('move_type', '=', 'out_invoice'), ('invoice_type', '=', 'commercial')]</field>
+        <field name="context">{'default_move_type': 'out_invoice', 'default_invoice_type': 'commercial'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Consultez vos factures commerciales
+            </p>
+        </field>
+    </record>
+
+    <!-- Action facture avoir -->
+    <record id="action_foconnect_sale_invoice_avoir" model="ir.actions.act_window">
+        <field name="name">Factures Avoir</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="domain">[('move_type', '=', 'out_refund'), ('invoice_type', '=', 'avoir')]</field>
+        <field name="context">{'default_move_type': 'out_refund', 'default_invoice_type': 'avoir'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Consultez vos factures avoir
+            </p>
+        </field>
+    </record>
+</odoo>

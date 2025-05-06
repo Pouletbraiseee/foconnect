@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Principal uniquement -->
+    <menuitem id="menu_foconnect_root"
+              name="FOconnect"
+              web_icon="foconnect,static/description/icon.png"
+              sequence="10"/>
+
+    <!-- Sous-menus principaux (sans les actions) -->
+    <menuitem id="menu_foconnect_purchase"
+              name="Achats"
+              parent="menu_foconnect_root"
+              sequence="10"/>
+
+    <menuitem id="menu_foconnect_purchase_local"
+              name="Achats Locaux"
+              parent="menu_foconnect_purchase"
+              sequence="10"/>
+
+    <menuitem id="menu_foconnect_purchase_import"
+              name="Import"
+              parent="menu_foconnect_purchase"
+              sequence="20"/>
+
+    <menuitem id="menu_foconnect_sale"
+              name="Ventes"
+              parent="menu_foconnect_root"
+              sequence="20"/>
+
+    <menuitem id="menu_foconnect_stock"
+              name="Gestion de Stock"
+              parent="menu_foconnect_root"
+              sequence="30"/>
+
+    <menuitem id="menu_foconnect_accounting"
+              name="Comptabilité"
+              parent="menu_foconnect_root"
+              sequence="40"/>
+
+    <menuitem id="menu_foconnect_reports"
+              name="Rapports"
+              parent="menu_foconnect_root"
+              sequence="50"/>
+
+    <menuitem id="menu_foconnect_contacts"
+              name="Contacts"
+              parent="menu_foconnect_root"
+              sequence="60"/>
+</odoo>

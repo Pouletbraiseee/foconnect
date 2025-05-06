@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire factures -->
+    <record id="view_account_move_form_inherit" model="ir.ui.view">
+        <field name="name">account.move.form.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="invoice_type" invisible="move_type not in ('out_invoice', 'out_refund', 'in_invoice', 'in_refund')"/>
+                <field name="origin_purchase_id" invisible="move_type not in ('in_invoice', 'in_refund')"/>
+                <field name="origin_purchase_type" invisible="move_type not in ('in_invoice', 'in_refund')"/>
+            </xpath>
+            <xpath expr="//page[@id='other_tab']" position="after">
+                <page string="Paiement et Suivi" invisible="move_type not in ('out_invoice', 'out_refund')">
+                    <group>
+                        <group string="Montants">
+                            <field name="ht_amount" readonly="1"/>
+                            <field name="tva_amount" readonly="1"/>
+                            <field name="ttc_amount" readonly="1"/>
+                        </group>
+                        <group string="Status">
+                            <field name="is_paid"/>
+                            <field name="payment_mode"/>
+                        </group>
+                        <group string="Dates et Montants">
+                            <field name="payment_reception_date"/>
+                            <field name="payment_amount"/>
+                            <field name="payment_due_date"/>
+                            <field name="payment_date"/>
+                            <field name="payment_bank"/>
+                        </group>
+                        <group string="Logistique">
+                            <field name="transporter"/>
+                            <field name="expedition_number"/>
+                            <field name="invoice_received"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue liste factures client -->
+    <record id="view_account_move_customer_tree" model="ir.ui.view">
+        <field name="name">account.move.customer.tree</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <tree string="Factures Client">
+                <field name="partner_id" string="CLIENTS"/>
+                <field name="ht_amount" string="H.T"/>
+                <field name="tva_amount" string="T.V.A"/>
+                <field name="ttc_amount" string="T.T.C"/>
+                <field name="is_paid" string="REGLE OU/NON"/>
+                <field name="payment_mode" string="MODE PAIEMENT"/>
+                <field name="payment_reception_date" string="DATE RECEPTION REGL"/>
+                <field name="payment_amount" string="MONTANT"/>
+                <field name="payment_due_date" string="DATE D'ECHELLANCE"/>
+                <field name="payment_date" string="DATE ENCAISSEMENT"/>
+                <field name="payment_bank" string="BANK"/>
+                <field name="transporter" string="TRANSPORTEUR"/>
+                <field name="expedition_number" string="N° D'EXP"/>
+                <field name="invoice_received" string="FACTURE RECU OU/NON"/>
+                <field name="state" invisible="1"/>
+                <field name="invoice_type" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue recherche factures -->
+    <record id="view_account_move_filter_inherit" model="ir.ui.view">
+        <field name="name">account.move.filter.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_move_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='posted']" position="after">
+                <filter string="Factures d'importation" name="import_invoice" domain="[('origin_purchase_type', '=', 'import')]"/>
+                <filter string="Factures locales" name="local_invoice" domain="[('origin_purchase_type', '=', 'local')]"/>
+                <separator/>
+                <filter string="Factures Proforma" name="proforma_invoice" domain="[('invoice_type', '=', 'proforma')]"/>
+                <filter string="Factures Commerciales" name="commercial_invoice" domain="[('invoice_type', '=', 'commercial')]"/>
+                <filter string="Factures Avoir" name="avoir_invoice" domain="[('invoice_type', '=', 'avoir')]"/>
+                <separator/>
+                <filter string="Réglées" name="paid_invoice" domain="[('is_paid', '=', 'oui')]"/>
+                <filter string="Non Réglées" name="unpaid_invoice" domain="[('is_paid', '=', 'non')]"/>
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <filter string="Type d'achat" name="group_by_purchase_type" context="{'group_by': 'origin_purchase_type'}"/>
+                <filter string="Type de facture" name="group_by_invoice_type" context="{'group_by': 'invoice_type'}"/>
+                <filter string="Mode de paiement" name="group_by_payment_mode" context="{'group_by': 'payment_mode'}"/>
+                <filter string="Banque" name="group_by_bank" context="{'group_by': 'payment_bank'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action factures fournisseur -->
+    <record id="action_foconnect_invoice_supplier" model="ir.actions.act_window">
+        <field name="name">Factures Fournisseur</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="domain">[('move_type', 'in', ['in_invoice', 'in_refund'])]</field>
+        <field name="context">{'default_move_type': 'in_invoice'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre première facture fournisseur
+            </p>
+        </field>
+    </record>
+
+    <!-- Action factures client -->
+    <record id="action_foconnect_invoice_customer" model="ir.actions.act_window">
+        <field name="name">Factures Client</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="domain">[('move_type', 'in', ['out_invoice', 'out_refund'])]</field>
+        <field name="context">{'default_move_type': 'out_invoice'}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                   (0, 0, {'view_mode': 'tree', 'view_id': ref('view_account_move_customer_tree')}),
+                                   (0, 0, {'view_mode': 'form', 'view_id': ref('view_account_move_form_inherit')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Créez votre première facture client
+            </p>
+        </field>
+    </record>
+</odoo>

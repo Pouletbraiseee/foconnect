@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue formulaire mouvement de stock -->
+    <record id="view_stock_picking_form_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="is_import_shipment"/>
+                <field name="is_in_transit"/>
+                <field name="transit_start_date" invisible="not is_in_transit"/>
+                <field name="transit_end_date" invisible="not is_in_transit"/>
+                <field name="transit_duration" invisible="not is_in_transit" widget="float_time"/>
+                <field name="is_received"/>
+                <field name="reception_date" invisible="not is_received"/>
+                <field name="invoice_received"/>
+            </xpath>
+            <xpath expr="//button[@name='button_validate']" position="before">
+                <button name="action_start_transit"
+                        string="Début Transit"
+                        type="object"
+                        invisible="is_in_transit or state not in ('assigned', 'confirmed')"
+                        class="oe_highlight"/>
+                <button name="action_end_transit"
+                        string="Fin Transit"
+                        type="object"
+                        invisible="not is_in_transit or state not in ('assigned', 'confirmed')"
+                        class="oe_highlight"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue recherche mouvement de stock -->
+    <record id="view_stock_picking_filter_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.filter.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <!-- Approche plus sûre pour Odoo 17 -->
+            <xpath expr="//search" position="inside">
+                <filter string="En Transit" name="in_transit" domain="[('is_in_transit', '=', True)]"/>
+                <filter string="Réceptionnés" name="received" domain="[('is_received', '=', True)]"/>
+                <filter string="Envois d'importation" name="import_shipment" domain="[('is_import_shipment', '=', True)]"/>
+                <group expand="0" string="Grouper par">
+                    <filter string="En transit" name="group_by_transit" context="{'group_by': 'is_in_transit'}"/>
+                    <filter string="Réceptionné" name="group_by_received" context="{'group_by': 'is_received'}"/>
+                    <filter string="Date de réception" name="group_by_reception_date" context="{'group_by': 'reception_date'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vue liste ligne de mouvement -->
+   <record id="view_stock_move_tree_inherit" model="ir.ui.view">
+       <field name="name">stock.move.tree.inherit</field>
+       <field name="model">stock.move</field>
+       <field name="inherit_id" ref="stock.view_move_tree"/>
+       <field name="arch" type="xml">
+           <xpath expr="//field[@name='product_id']" position="after">
+               <field name="origin_purchase_type"/>
+               <field name="is_imported_product"/>
+           </xpath>
+       </field>
+   </record>
+
+   <!-- Vue recherche ligne de mouvement -->
+   <record id="view_stock_move_filter_inherit" model="ir.ui.view">
+       <field name="name">stock.move.filter.inherit</field>
+       <field name="model">stock.move</field>
+       <field name="inherit_id" ref="stock.view_move_search"/>
+       <field name="arch" type="xml">
+           <xpath expr="//filter[@name='by_product']" position="after">
+               <filter string="Produits importés" name="imported_product" domain="[('is_imported_product', '=', True)]"/>
+           </xpath>
+           <xpath expr="//group" position="inside">
+               <filter string="Type d'achat" name="group_by_purchase_type" context="{'group_by': 'origin_purchase_type'}"/>
+           </xpath>
+       </field>
+   </record>
+
+   <!-- Action entrées de stock -->
+   <record id="action_foconnect_stock_incoming" model="ir.actions.act_window">
+       <field name="name">Entrées</field>
+       <field name="res_model">stock.picking</field>
+       <field name="view_mode">tree,form,pivot,graph</field>
+       <field name="domain">[('picking_type_code', '=', 'incoming')]</field>
+       <field name="context">{'search_default_available': 1}</field>
+       <field name="help" type="html">
+           <p class="o_view_nocontent_smiling_face">
+               Consultez vos entrées en stock
+           </p>
+       </field>
+   </record>
+
+   <!-- Action sorties de stock -->
+   <record id="action_foconnect_stock_outgoing" model="ir.actions.act_window">
+       <field name="name">Sorties</field>
+       <field name="res_model">stock.picking</field>
+       <field name="view_mode">tree,form,pivot,graph</field>
+       <field name="domain">[('picking_type_code', '=', 'outgoing')]</field>
+       <field name="context">{'search_default_available': 1}</field>
+       <field name="help" type="html">
+           <p class="o_view_nocontent_smiling_face">
+               Consultez vos sorties de stock
+           </p>
+       </field>
+   </record>
+
+   <!-- Action transit -->
+   <record id="action_foconnect_stock_transit" model="ir.actions.act_window">
+       <field name="name">Transit</field>
+       <field name="res_model">stock.picking</field>
+       <field name="view_mode">tree,form,pivot,graph</field>
+       <field name="domain">[('is_in_transit', '=', True)]</field>
+       <field name="context">{'search_default_in_transit': 1}</field>
+       <field name="help" type="html">
+           <p class="o_view_nocontent_smiling_face">
+               Consultez vos produits en transit
+           </p>
+       </field>
+   </record>
+</odoo>
